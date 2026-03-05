@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedEmail = Cookies.get("email") || "";
@@ -13,71 +15,115 @@ function LoginPage() {
     setPassword(savedPassword);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    Cookies.set("email", email)
-    Cookies.set("password", password)
-    alert("Login Sucessful")
-  };
+    setLoading(true);
 
-  const checkUser = async (formData) => {
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ email, password })
       });
 
-      const newUser = await response.json();
-      setUsers([...users, newUser]); // Optimistic update
-    } catch (err) {
-      console.error(err);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (data.success) {
+        alert("✅ Login realizado com sucesso!");
+        if (data.user.cargo === "admin") {
+          navigate(`/admin/${data.user.id}/panel`);
+        } else {
+          navigate(`/user/${data.user.id}/driverEarnings`);
+        }
+      } else {
+        alert("❌ Erro no login: " + (data.message || 'Erro desconhecido'));
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert("❌ Erro de conexão: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <form
-        className="w-full max-w-sm bg-white rounded-lg shadow-md p-6 space-y-4">
-        <h1 className="text-2xl font-semibold text-center">Taxi Manager</h1>
+        className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-8 space-y-6"
+        onSubmit={handleSubmit}
+      >
+        <div className="text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            🚕 TaxiManager
+          </h1>
+          <p className="text-sm text-gray-500">Bem-vindo de volta!</p>
+        </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+            ✉️ Email
+          </label>
           <input
             type="email"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50"
             value={email}
-            placeholder="taxi@example.com"
+            placeholder="motorista@taxi.com"
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            required
           />
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium">Password</label>
+          <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+            🔒 Palavra-Passe
+          </label>
           <input
             type="password"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50"
             value={password}
             placeholder="••••••••"
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+            required
           />
         </div>
 
         <button
           type="submit"
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          disabled={loading || !email || !password}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
-          Entrar
+          {loading ? (
+            <>
+              <div className="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+              Entrando...
+            </>
+          ) : (
+            '🚀 Entrar'
+          )}
         </button>
+
         <Link to="/signup">
           <button
             type="button"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-medium hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border border-green-200/50"
           >
-            Registar
+            📝 Registar Nova Conta
           </button>
         </Link>
+
+        {loading && (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        )}
       </form>
     </div>
   );
