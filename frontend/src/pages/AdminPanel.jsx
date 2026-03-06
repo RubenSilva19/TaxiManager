@@ -16,12 +16,12 @@ function AdminPanel() {
             setLoading(true);
             
             // Buscar todos users
-            const usersRes = await fetch('/api/users');
+            const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/api/users`);
             const usersData = await usersRes.json();
             setUsers(usersData);
             
             // Buscar drivers
-            const driversRes = await fetch('/api/drivers');
+            const driversRes = await fetch(`${process.env.REACT_APP_API_URL}/api/drivers`);
             const driversData = await driversRes.json();
             setDrivers(driversData);
             
@@ -35,7 +35,7 @@ function AdminPanel() {
     const handleDeleteUser = async (userId) => {
         if (window.confirm('Tem certeza que quer deletar este utilizador?')) {
             try {
-                const res = await fetch(`/api/users/${userId}`, { 
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, { 
                     method: 'DELETE' 
                 });
                 if (res.ok) {

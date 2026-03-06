@@ -11,7 +11,7 @@ function SignupPage() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(nome, apelido, email, password, cargo);
-        fetch('/api/auth/signup', {
+        fetch(`${process.env.REACT_APP_API_URL}/api/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: `${nome} ${apelido}`, email, password, cargo })

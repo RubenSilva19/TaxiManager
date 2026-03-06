@@ -16,7 +16,7 @@ function TripHistoryPage() {
         setError(null);
         
         try {
-            const res = await fetch(`/api/trip/${id}/historico?period=${period}`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/api/trip/${id}/historico?period=${period}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             
             const data = await res.json();

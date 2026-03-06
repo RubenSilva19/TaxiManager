@@ -22,7 +22,7 @@ function DriverEarningsPage() {
         setError(null);
 
         try {
-            const res = await fetch('/api/trip/create', {
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/api/trip/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -62,7 +62,7 @@ function DriverEarningsPage() {
         setError(null);
 
         try {
-            const res = await fetch(`/api/trip/${id}/dailylogs`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/api/trip/${id}/dailylogs`);
 
             if (!res.ok) {
                 throw new Error(`HTTP ${res.status}`);
