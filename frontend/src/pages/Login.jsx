@@ -24,7 +24,7 @@ const handleSubmit = async (e) => {
     console.log('📧 Email:', email);
     console.log('🔑 Password:', password);
     
-    const response = await fetch(`https://taximanagerapi.onrender.com/api/auth/login`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
