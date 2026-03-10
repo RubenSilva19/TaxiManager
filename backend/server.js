@@ -6,6 +6,11 @@ import routes from './routes/index.js';
 
 dotenv.config();
 
+console.log('🔍 MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('🔍 MONGODB_URI starts with:', process.env.MONGODB_URI?.substring(0, 20) + '...');
+console.log('🔍 PORT:', process.env.PORT);
+console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
+
 const app = express();
 
 // CORS configuration
