@@ -15,43 +15,60 @@ function LoginPage() {
     setPassword(savedPassword);
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      console.log(process.env.REACT_APP_API_URL);
-      console.log(email, password);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+  try {
+    console.log('🌐 API URL:', process.env.REACT_APP_API_URL);
+    console.log('📧 Email:', email);
+    console.log('🔑 Password:', password);
+    
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
+    // 🆕 DEBUG: Log EVERYTHING about the response
+    console.log('📊 Status:', response.status);
+    console.log('📊 Status Text:', response.statusText);
+    console.log('📊 OK:', response.ok);
+    
+    // 🆕 See RAW response before parsing
+    const rawResponse = await response.text();
+    console.log('📄 RAW Response:', rawResponse);
 
-      const data = await response.json();
-      console.log("Response data:", data);
-
-      if (data.success) {
-        alert("✅ Login realizado com sucesso!");
-        if (data.user.cargo === "admin") {
-          navigate(`/admin/${data.user.id}/panel`);
-        } else {
-          navigate(`/user/${data.user.id}/driverEarnings`);
-        }
-      } else {
-        alert("❌ Erro no login: " + (data.message || 'Erro desconhecido'));
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert("❌ Erro de conexão: " + error.message);
-    } finally {
-      setLoading(false);
+    // 🆕 Check if response is empty
+    if (!rawResponse) {
+      throw new Error('Server returned empty response');
     }
-  };
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${rawResponse || 'No details'}`);
+    }
+
+    const data = JSON.parse(rawResponse); // Manual parse after checking
+    console.log("✅ Parsed data:", data);
+
+    if (data.success) {
+      alert("✅ Login realizado com sucesso!");
+      if (data.user.cargo === "admin") {
+        navigate(`/admin/${data.user.id}/panel`);
+      } else {
+        navigate(`/user/${data.user.id}/driverEarnings`);
+      }
+    } else {
+      alert("❌ Erro no login: " + (data.message || 'Erro desconhecido'));
+    }
+  } catch (error) {
+    console.error('❌ Login error:', error);
+    alert("❌ Erro: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
