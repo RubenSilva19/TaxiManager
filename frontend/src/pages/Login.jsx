@@ -21,6 +21,7 @@ function LoginPage() {
 
     try {
       console.log(process.env.REACT_APP_API_URL);
+      console.log(email, password);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
