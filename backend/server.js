@@ -13,28 +13,10 @@ console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
 
 const app = express();
 
-// CORS configuration
-const allowedOrigins = [
-  'http://localhost:3000', // for local React dev
-  'https://taximanager-z0bt.onrender.com/', // <-- put your real Render static-site URL here
-];
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    // allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
-
-// Use CORS before routes
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: ['https://taximanager-z0bt.onrender.com', 'http://localhost:5173'],
+  credentials: true
+}));
 
 app.use(express.json());
 
