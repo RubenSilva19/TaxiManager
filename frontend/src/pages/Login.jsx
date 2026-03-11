@@ -20,11 +20,11 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    console.log('🌐 API URL:', process.env.REACT_APP_API_URL);
+    console.log('🌐 API URL:', import.meta.env.VITE_API_URL);
     console.log('📧 Email:', email);
     console.log('🔑 Password:', password);
     
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
